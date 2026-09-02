@@ -85,7 +85,7 @@ class FreezeOrderRequest(BaseModel):
 # ------------------------------------------------------------------------------
 # 2. DETERMINISTIC GRAPH ENGINE & SPATIAL MATRIX
 # ------------------------------------------------------------------------------
-class TRACEGRAPHGraphEngine:
+class TraceGraphEngine:
     def __init__(self):
         self.graph = nx.DiGraph()
         self.atm_registry: Dict[str, ATMNode] = {}
@@ -201,7 +201,7 @@ class TRACEGRAPHGraphEngine:
         scored_atms.sort(key=lambda x: x["probability"], reverse=True)
         return scored_atms[:5]
 
-engine = TRACEGRAPHGraphEngine()
+engine = TraceGraphEngine()
 
 # ------------------------------------------------------------------------------
 # 3. FASTAPI CORE & ENDPOINTS
@@ -220,7 +220,7 @@ app.add_middleware(
 def health_check():
     return {
         "status": "HEALTHY",
-        "engine": "TRACEGRAPHGraphEngine",
+        "engine": "TraceGraphEngine",
         "total_nodes": 420,
         "total_edges": 612,
         "gemini_agent_ready": bool(os.environ.get("GEMINI_API_KEY"))
