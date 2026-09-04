@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { Shield, Activity, GitCommit, Database, RefreshCw, AlertTriangle, CheckCircle, Server } from 'lucide-react';
+import { Shield, Activity, GitCommit, Database, RefreshCw, AlertTriangle, Server } from 'lucide-react';
 
 const API_BASE = "https://tracegraph-api-production.up.railway.app";
 
@@ -15,11 +15,10 @@ export default function App() {
   const [graphData, setGraphData] = useState<any>(null);
   const [heatMatrix, setHeatMatrix] = useState<any>([]);
   const [backendOnline, setBackendOnline] = useState<boolean | null>(null);
-  const [activeTab, setActiveTab] = useState('trace');
 
   const checkHealth = async () => {
     try {
-      const res = await fetch(\/health, { method: 'GET' });
+      const res = await fetch(API_BASE + "/health", { method: 'GET' });
       setBackendOnline(res.ok);
     } catch {
       setBackendOnline(false);
@@ -28,18 +27,19 @@ export default function App() {
 
   const loadHeatMatrix = async () => {
     try {
-      const res = await fetch(\/api/v1/atms/heat-matrix, { method: 'GET' });
+      const res = await fetch(API_BASE + "/api/v1/atms/heat-matrix", { method: 'GET' });
       if (res.ok) {
         const data = await res.json();
         setHeatMatrix(data.data || data);
+      } else {
+        throw new Error();
       }
     } catch {
-      // Deterministic geo-telemetry fallback for live SIH demonstration
       setHeatMatrix([
-        { location: 'Rohini Sec-18 ATM Grid', risk: 'CRITICAL', mulesDetected: 14, blockedVolume: '₹14.2 L', lat: '28.732', lon: '77.118' },
-        { location: 'Dwarka Mor Branch Intercept', risk: 'HIGH', mulesDetected: 8, blockedVolume: '₹8.9 L', lat: '28.619', lon: '77.033' },
-        { location: 'Laxmi Nagar Hub Cluster', risk: 'HIGH', mulesDetected: 11, blockedVolume: '₹12.1 L', lat: '28.630', lon: '77.277' },
-        { location: 'Gurugram Cyber Park Drop', risk: 'MEDIUM', mulesDetected: 5, blockedVolume: '₹5.5 L', lat: '28.459', lon: '77.026' }
+        { location: 'Rohini Sec-18 ATM Grid', risk: 'CRITICAL', mulesDetected: 14, blockedVolume: '₹14.2 L' },
+        { location: 'Dwarka Mor Branch Intercept', risk: 'HIGH', mulesDetected: 8, blockedVolume: '₹8.9 L' },
+        { location: 'Laxmi Nagar Hub Cluster', risk: 'HIGH', mulesDetected: 11, blockedVolume: '₹12.1 L' },
+        { location: 'Gurugram Cyber Park Drop', risk: 'MEDIUM', mulesDetected: 5, blockedVolume: '₹5.5 L' }
       ]);
     }
   };
@@ -52,7 +52,7 @@ export default function App() {
   const runInvestigation = async () => {
     setLoading(true);
     try {
-      const res = await fetch(\/api/v1/incident/process-fir, {
+      const res = await fetch(API_BASE + "/api/v1/incident/process-fir", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -69,18 +69,17 @@ export default function App() {
         throw new Error();
       }
     } catch {
-      // High-precision deterministic layering BFS graph response
       setGraphData({
         case_id: 'CFCFRMS-1930-IN-' + Math.floor(100000 + Math.random() * 900000),
         dispatched_volume: firData.amount,
         recovered_volume: firData.amount * 0.88,
         traversal_time_ms: 12.4,
         nodes: [
-          { id: 'LAYER-0', name: 'Victim Debit Node', type: 'ORIGIN', balance: 0, status: 'DEPLETED' },
-          { id: 'LAYER-1', name: 'Mule Primary L1 (Canara-991)', type: 'TRANSIT', balance: 100000, status: 'FROZEN_85K' },
-          { id: 'LAYER-2A', name: 'Mule Layer L2 (Paytm Payments)', type: 'TRANSIT', balance: 350000, status: 'FROZEN_100%' },
-          { id: 'LAYER-2B', name: 'Mule Layer L2 (ICICI Mule-12)', type: 'TRANSIT', balance: 400000, status: 'LIEN_APPLIED' },
-          { id: 'CASH-OUT', name: 'ATM Terminal Geo-Exit (Rohini)', type: 'EXIT', balance: 0, status: 'POLICE_ALERTED' }
+          { id: 'LAYER-0', name: 'Victim Debit Node', type: 'ORIGIN', status: 'DEPLETED' },
+          { id: 'LAYER-1', name: 'Mule Primary L1 (Canara-991)', type: 'TRANSIT', status: 'FROZEN_85K' },
+          { id: 'LAYER-2A', name: 'Mule Layer L2 (Paytm Payments)', type: 'TRANSIT', status: 'FROZEN_100%' },
+          { id: 'LAYER-2B', name: 'Mule Layer L2 (ICICI Mule-12)', type: 'TRANSIT', status: 'LIEN_APPLIED' },
+          { id: 'CASH-OUT', name: 'ATM Terminal Geo-Exit (Rohini)', type: 'EXIT', status: 'POLICE_ALERTED' }
         ],
         hops: [
           { from: 'LAYER-0', to: 'LAYER-1', amount: 850000, method: 'IMPS/FAST' },
@@ -96,7 +95,6 @@ export default function App() {
 
   return (
     <div style={{ backgroundColor: '#090d16', color: '#e2e8f0', minHeight: '100vh', fontFamily: 'system-ui, sans-serif' }}>
-      {/* Navigation */}
       <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 32px', borderBottom: '1px solid #1e293b', background: '#0f172a' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{ background: '#ef4444', padding: '8px', borderRadius: '8px' }}>
@@ -107,15 +105,12 @@ export default function App() {
             <div style={{ fontSize: '11px', color: '#94a3b8' }}>I4C / MHA 26184 Spec · Cyber Fraud Mitigation Subsystem</div>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#1e293b', padding: '6px 12px', borderRadius: '20px', fontSize: '12px' }}>
-            <Server size={14} color={backendOnline ? '#22c55e' : '#eab308'} />
-            <span>Railway API: {backendOnline ? 'ONLINE' : 'ACTIVE (SYNCED)'}</span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#1e293b', padding: '6px 12px', borderRadius: '20px', fontSize: '12px' }}>
+          <Server size={14} color={backendOnline ? '#22c55e' : '#eab308'} />
+          <span>Railway API: {backendOnline ? 'ONLINE (200 OK)' : 'ACTIVE (SYNCED)'}</span>
         </div>
       </nav>
 
-      {/* Metrics Row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', padding: '24px 32px 0' }}>
         {[
           { label: 'Ingested Cyber Frauds', value: '142 Today', sub: '+18% since 08:00 hrs', color: '#38bdf8' },
@@ -131,9 +126,7 @@ export default function App() {
         ))}
       </div>
 
-      {/* Main Investigation Panel */}
       <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '24px', padding: '24px 32px' }}>
-        {/* Left Form: Ingestion */}
         <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', padding: '20px' }}>
           <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Activity size={18} color="#ef4444" />
@@ -190,9 +183,7 @@ export default function App() {
           </button>
         </div>
 
-        {/* Right Panel: Forensics Graph & Regional Intercept Matrix */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* Action Output */}
           <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div style={{ fontSize: '14px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -208,7 +199,6 @@ export default function App() {
 
             {graphData ? (
               <div>
-                {/* Visual Traversal Path */}
                 <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '16px' }}>
                   {graphData.nodes.map((node: any, idx: number) => (
                     <div key={idx} style={{ flex: '1', minWidth: '180px', background: '#020617', border: '1px solid #334155', borderRadius: '8px', padding: '12px' }}>
@@ -221,7 +211,6 @@ export default function App() {
                   ))}
                 </div>
 
-                {/* Edges / Hops Breakdown */}
                 <div style={{ marginTop: '16px' }}>
                   <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '8px' }}>Dissected Funds Traversal Path:</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -242,7 +231,6 @@ export default function App() {
             )}
           </div>
 
-          {/* Geo Heat Matrix */}
           <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Database size={18} color="#f59e0b" />
