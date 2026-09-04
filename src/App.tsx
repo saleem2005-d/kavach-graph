@@ -116,7 +116,7 @@ interface PoliceDispatchAlert {
   timestamp_utc: string;
 }
 
-const BASE_URL = 'https://tracegraph-backend.onrender.com';
+const BASE_URL = 'https://tracegraph-api-production.up.railway.app';
 
 function MapRecenter({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap();
@@ -601,4 +601,5 @@ export default function App() {
     </div>
   );
 }
+
 
