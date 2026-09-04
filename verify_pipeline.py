@@ -2,7 +2,7 @@
 import requests
 import json
 
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = "https://tracegraph-api-production.up.railway.app"
 
 def test_pipeline():
     print("Testing /health endpoint...")
@@ -31,3 +31,4 @@ def test_pipeline():
 
 if __name__ == "__main__":
     test_pipeline()
+
