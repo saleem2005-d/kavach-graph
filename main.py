@@ -4,10 +4,10 @@ from collections import deque
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import Response
+from starlette.responses import Response, JSONResponse
 from pydantic import BaseModel
 
-app = FastAPI(title="TraceGraph Core Engine", version="2.0.0")
+app = FastAPI(title="TraceGraph Intelligence Engine", version="2.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,21 +17,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class DualCORSMiddleware(BaseHTTPMiddleware):
+class HardenedCORSMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         if request.method == "OPTIONS":
-            response = Response(status_code=204)
+            resp = Response(status_code=204)
         else:
             try:
-                response = await call_next(request)
+                resp = await call_next(request)
             except Exception as e:
-                response = Response(content=f'{{"error": "{str(e)}"}}', status_code=500, media_type="application/json")
-        response.headers["Access-Control-Allow-Origin"] = "*"
-        response.headers["Access-Control-Allow-Methods"] = "*"
-        response.headers["Access-Control-Allow-Headers"] = "*"
-        return response
+                resp = JSONResponse(status_code=500, content={"error": str(e)})
+        resp.headers["Access-Control-Allow-Origin"] = "*"
+        resp.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, HEAD"
+        resp.headers["Access-Control-Allow-Headers"] = "*"
+        return resp
 
-app.add_middleware(DualCORSMiddleware)
+app.add_middleware(HardenedCORSMiddleware)
 
 LEDGER = [
     {"from": "ACC-VICTIM-01", "to": "MULE-L1-CANARA-991", "amount": 850000, "utr": "UPI/2026/891021", "channel": "IMPS"},
@@ -51,7 +51,7 @@ class IncidentRequest(BaseModel):
 @app.get("/")
 @app.get("/health")
 def health():
-    return {"status": "ONLINE", "code": 200}
+    return {"status": "ONLINE", "code": 200, "engine": "TraceGraph BFS Core"}
 
 @app.get("/api/v1/atms/heat-matrix")
 def heat_matrix():
@@ -99,3 +99,8 @@ def process_fir(incident: IncidentRequest):
         "nodes": list(nodes.values()),
         "hops": hops
     }
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
