@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ShieldAlert, Activity, MapPin, Zap, AlertTriangle, 
   Lock, Clock, ShieldCheck, TrendingUp, IndianRupee,
@@ -49,7 +49,7 @@ const CustomGraphNode = ({ data }: { data: any }) => {
       <Handle type="target" position={Position.Left} className="!bg-slate-400 !w-2 !h-2" />
       <div className="font-bold text-[10px] tracking-wider uppercase">{data.label}</div>
       <div className="text-[9px] text-slate-300 mt-0.5 font-sans">
-        {data.amount ? `₹${(data.amount / 100000).toFixed(2)}L` : data.sublabel}
+        {data.amount ? `â‚¹${(data.amount / 100000).toFixed(2)}L` : data.sublabel}
       </div>
       <Handle type="source" position={Position.Right} className="!bg-cyan-400 !w-2 !h-2" />
     </div>
@@ -116,7 +116,7 @@ interface PoliceDispatchAlert {
   timestamp_utc: string;
 }
 
-const BASE_URL = 'http://127.0.0.1:8000';
+const BASE_URL = 'https://tracegraph-backend.onrender.com';
 
 function MapRecenter({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap();
@@ -347,7 +347,7 @@ export default function App() {
         <div className="bg-[#0B1021] border border-slate-800/80 rounded-xl p-3.5 flex items-center justify-between shadow-lg">
           <div>
             <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Estimated Funds Recoverable</div>
-            <div className="text-xl font-bold font-mono text-emerald-400 mt-0.5">₹2.34 Cr</div>
+            <div className="text-xl font-bold font-mono text-emerald-400 mt-0.5">â‚¹2.34 Cr</div>
           </div>
           <div className="p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-800/40 text-emerald-400">
             <IndianRupee className="w-4 h-4" />
@@ -578,7 +578,7 @@ export default function App() {
                           <div className="text-[11px] font-mono text-slate-900 p-1">
                             <strong>{atm.atm_id}</strong> ({atm.bank_name})<br />
                             Risk Level: <strong>{riskLevel}</strong><br />
-                            Liquidity: ₹{(atm.liquidity_inr / 100000).toFixed(2)}L<br />
+                            Liquidity: â‚¹{(atm.liquidity_inr / 100000).toFixed(2)}L<br />
                             Velocity: {atm.recent_velocity.toFixed(1)} tx/hr
                           </div>
                         </Popup>
@@ -601,3 +601,4 @@ export default function App() {
     </div>
   );
 }
+
